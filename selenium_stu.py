@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 import re
+import os
 
 def welcome_page():
     print("#################################")
@@ -70,9 +71,8 @@ def get_food(driver):
 
 def load_love_dict(filename):
 
-    whole_qaza = open(filename, "r")
+    whole_qaza = open(filename, "r", encoding="utf-8")
     love_dict = {}
-
     for line in whole_qaza.readlines():
         food_love = line.split("-")
         food_love[0] = food_love[0].replace(" ","")
@@ -99,8 +99,9 @@ def add_qaza(filname, qaza, score):
 
 ########### MAIN Code ##############
 
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
-driver = webdriver.Chrome(r'/home/amin/Python/Stu/chromedriver')
+driver = webdriver.Chrome(CUR_DIR + '/chromedriver.exe')
 driver.get('http://stu.iust.ac.ir')
 
 
@@ -117,6 +118,7 @@ get_money(driver)
 
 this_week_foods = get_food(driver)
 love_dict = load_love_dict("qaza.txt")
+
 
 
 ###################
