@@ -1,8 +1,11 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+
 import time
 import re
 import os
+
 
 def welcome_page():
     print("#################################")
@@ -15,8 +18,8 @@ def welcome_page():
 
 def login(driver):
 
-    user_element = driver.find_element_by_name("username")
-    pass_element = driver.find_element_by_name("password")
+    user_element = driver.find_element(By.NAME, "username")
+    pass_element = driver.find_element(By.NAME, "password")
     pass_element.clear()
     user_element.clear()
 
@@ -30,8 +33,8 @@ def login(driver):
 def adjust_panel(driver):
 
     driver.get('http://stu.iust.ac.ir/nurture/user/multi/reserve/showPanel.rose')
-    self_id = driver.find_element_by_id("selfId")
-    for option in self_id.find_elements_by_tag_name('option'):
+    self_id = driver.find_element(By.ID, "selfId")
+    for option in self_id.find_elements(By.TAG_NAME, 'option'):
         if option.get_attribute("value") == '1':
             option.click() # select() in earlier versions of webdriver
             break
@@ -41,7 +44,7 @@ def adjust_panel(driver):
 
 def get_food(driver):
 
-    whole_table_tags = driver.find_elements_by_tag_name("table")
+    whole_table_tags = driver.find_elements(By.TAG_NAME, "table")
 
     days = []
     foods = []
@@ -55,7 +58,7 @@ def get_food(driver):
         if table.get_attribute("cellspacing") == "2":
             days.append(table)
             cur_food = {}
-            spans = table.find_elements_by_tag_name("span")
+            spans = table.find_elements(By.TAG_NAME, "span")
             for span in spans:
                 if "foodNameSpan" in span.get_attribute("id"):
                     temp = span.get_attribute("innerHTML")
@@ -86,7 +89,7 @@ def load_love_dict(filename):
 
 def get_money(driver):
 
-    current_money = int(driver.find_element_by_id("creditId").get_attribute("innerHTML"))/10000
+    current_money = int(driver.find_element(By.ID, "creditId").get_attribute("innerHTML"))/10000
     print("\n[$] Money : ", current_money, "\n")
 
 
@@ -98,18 +101,13 @@ def add_qaza(filname, qaza, score):
 
 
 ########### MAIN Code ##############
+driver_path = "./chromedriver"
+brave_path = "/usr/bin/brave-browser"
 
-CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-
-try:
-    driver = webdriver.Chrome(CUR_DIR + '/chromedriver.exe')
-except:
-    print("[!] Error : Chrome Driver Not Founded ! put it next to Script ...")
-    print("    Download Your Chrome Driver Version from Here:")
-    print("    http://chromedriver.chromium.org/downloads")
-
+option = webdriver.ChromeOptions()
+option.binary_location = brave_path
+driver = webdriver.Chrome(executable_path=driver_path, chrome_options=option)
 driver.get('http://stu.iust.ac.ir')
-
 
 welcome_page()
 login(driver)
@@ -160,7 +158,7 @@ for day in this_week_foods:
 
 for i in range(5):
     try:
-        if driver.find_element_by_id(reserve[i]).get_attribute("checked") != "true":
+        if driver.find_element(By.ID, reserve[i]).get_attribute("checked") != "true":
             driver.execute_script("document.getElementById('" + reserve[i] + "').checked = true;")
             driver.execute_script("document.getElementById('" + reserve[i] + "').onclick();")
             print("[+] Reservation Number", str(i+1), "Is Compeleted !!")
